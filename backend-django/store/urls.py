@@ -1,11 +1,12 @@
 from django.urls import path
-from .views import products, register, login, create_order, get_orders, get_wishlist, toggle_wishlist
+from .views import products, register, login, create_order, get_orders, get_wishlist, toggle_wishlist, get_user_profile
 
 
 urlpatterns = [
     path('products/', products),
     path('register/', register),
     path('login/', login),
+    path('user/profile/', get_user_profile),
     path('orders/', get_orders),
     path('orders/create/', create_order),
     path('wishlist/', get_wishlist),

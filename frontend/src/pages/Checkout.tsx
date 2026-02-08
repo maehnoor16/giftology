@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api';
 import Dialog from '../components/Dialog';
@@ -7,6 +8,7 @@ import '../styles/checkout.css';
 
 const Checkout = () => {
   const { cart, total, clearCart } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -21,6 +23,35 @@ const Checkout = () => {
     phone: '',
     couponCode: '',
   });
+
+  // Auto-fill form data when user is logged in
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (user && user.email) {
+        try {
+          const response = await api.get('user/profile/', { params: { email: user.email } });
+          const profileData = response.data;
+          setFormData(prevData => ({
+            ...prevData,
+            email: profileData.email || user.email,
+            firstName: profileData.firstName || '',
+            lastName: profileData.lastName || '',
+            address: profileData.address || '',
+            city: profileData.city || '',
+            phone: profileData.phone || '',
+          }));
+        } catch (error) {
+          // If profile fetch fails, just use basic user info
+          setFormData(prevData => ({
+            ...prevData,
+            email: user.email || '',
+          }));
+        }
+      }
+    };
+
+    fetchUserProfile();
+  }, [user]);
 
   const handleChange = (e: any) => {
     setFormData({

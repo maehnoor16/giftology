@@ -42,6 +42,31 @@ def login(request):
 
 
 @api_view(['GET'])
+def get_user_profile(request):
+    email = request.query_params.get('email')
+    
+    if not email:
+        return Response({'error': 'Email parameter required'}, status=400)
+    
+    try:
+        user = User.objects.get(email=email)
+        # Try to get the most recent order to get delivery details
+        last_order = Order.objects.filter(user=user).order_by('-created_at').first()
+        
+        profile_data = {
+            'email': user.email,
+            'firstName': user.first_name,
+            'lastName': user.last_name,
+            'address': last_order.address if last_order else '',
+            'city': last_order.city if last_order else '',
+            'phone': last_order.phone if last_order else '',
+        }
+        return Response(profile_data)
+    except User.DoesNotExist:
+        return Response({'error': 'User not found'}, status=404)
+
+
+@api_view(['GET'])
 def get_orders(request):
     email = request.query_params.get('email')
     

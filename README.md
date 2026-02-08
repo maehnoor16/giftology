@@ -25,30 +25,35 @@ A full-stack e-commerce application for gift shopping with user authentication, 
 ## ✨ Features
 
 ### User & Authentication
+
 - ✅ User registration and login
 - ✅ Email-based authentication
 - ✅ Persistent user sessions
 - ✅ User-specific data (orders, wishlist)
 
 ### Product Catalog
+
 - ✅ Browse all products
 - ✅ Search and filter products
 - ✅ View product details
 - ✅ Real-time stock tracking
 
 ### Shopping Experience
+
 - ✅ Add/remove items from cart
 - ✅ Persistent cart storage
 - ✅ Quantity management
 - ✅ Real-time cart total calculation
 
 ### Wishlist Management
+
 - ✅ Add/remove items from wishlist
 - ✅ User-specific wishlist (per email)
 - ✅ Wishlist synchronization with backend
 - ✅ View saved items anytime
 
 ### Checkout & Orders
+
 - ✅ Multi-step checkout process
 - ✅ Delivery information collection
 - ✅ Optional coupon code support
@@ -57,6 +62,7 @@ A full-stack e-commerce application for gift shopping with user authentication, 
 - ✅ Order history viewing
 
 ### UI/UX
+
 - ✅ Modern, responsive design
 - ✅ Beautiful gradient aesthetics
 - ✅ Minimal dialog popups (no browser alerts)
@@ -69,6 +75,7 @@ A full-stack e-commerce application for gift shopping with user authentication, 
 ## 🛠️ Tech Stack
 
 ### Backend - Django REST Framework
+
 - **Framework**: Django 6.0+
 - **API**: Django REST Framework
 - **Database**: SQLite (development), PostgreSQL (production-ready)
@@ -76,6 +83,7 @@ A full-stack e-commerce application for gift shopping with user authentication, 
 - **Port**: `8000`
 
 ### Frontend - React + TypeScript
+
 - **Framework**: React 18+
 - **Language**: TypeScript
 - **Styling**: CSS3 with gradients and animations
@@ -84,6 +92,7 @@ A full-stack e-commerce application for gift shopping with user authentication, 
 - **Port**: `3000`
 
 ### Payment Service - Node.js
+
 - **Framework**: Express.js
 - **Language**: JavaScript
 - **Port**: `5000`
@@ -245,6 +254,7 @@ Payment service will run at: `http://localhost:5000`
 ### Option 1: Run All Services Separately
 
 **Terminal 1 - Django Backend:**
+
 ```bash
 cd backend-django
 venv\Scripts\activate  # Windows
@@ -252,12 +262,14 @@ python manage.py runserver
 ```
 
 **Terminal 2 - React Frontend:**
+
 ```bash
 cd frontend
 npm start
 ```
 
 **Terminal 3 - Node.js Service (Optional):**
+
 ```bash
 cd backend-node
 npm start
@@ -283,6 +295,7 @@ cd backend-node && npm start
 ## 📡 API Documentation
 
 ### Base URL
+
 ```
 http://127.0.0.1:8000/api/
 ```
@@ -290,6 +303,7 @@ http://127.0.0.1:8000/api/
 ### Authentication Endpoints
 
 #### Login
+
 ```
 POST /login/
 Body: { "username": "email", "password": "password" }
@@ -297,6 +311,7 @@ Response: { "message": "Login successful", "user_id": 1, "email": "user@example.
 ```
 
 #### Register
+
 ```
 POST /register/
 Body: { "username": "email", "password": "password", "email": "user@example.com" }
@@ -306,6 +321,7 @@ Response: { "message": "User created" }
 ### Product Endpoints
 
 #### Get All Products
+
 ```
 GET /products/
 Response: [{ "id": 1, "name": "Product", "price": 999, "image": "url", "stock": 10 }, ...]
@@ -314,12 +330,14 @@ Response: [{ "id": 1, "name": "Product", "price": 999, "image": "url", "stock": 
 ### Order Endpoints
 
 #### Get User Orders
+
 ```
 GET /orders/?email=user@example.com
 Response: [{ "id": 1, "user": 1, "total_price": 1199, "items": [...], "created_at": "..." }, ...]
 ```
 
 #### Create Order
+
 ```
 POST /orders/create/
 Body: {
@@ -338,12 +356,14 @@ Response: { "message": "Order created successfully", "order_id": 1 }
 ### Wishlist Endpoints
 
 #### Get User Wishlist
+
 ```
 GET /wishlist/?email=user@example.com
 Response: [{ "id": 1, "name": "Product", "price": 999, "image": "url", ... }, ...]
 ```
 
 #### Toggle Wishlist Item
+
 ```
 POST /wishlist/toggle/
 Body: { "email": "user@example.com", "product_id": 1 }
@@ -357,6 +377,7 @@ Response: { "message": "added" } or { "message": "removed" }
 ### Models
 
 #### Product
+
 ```python
 - id: Integer (Primary Key)
 - name: String(200)
@@ -367,6 +388,7 @@ Response: { "message": "added" } or { "message": "removed" }
 ```
 
 #### Order
+
 ```python
 - id: Integer (Primary Key)
 - user: Foreign Key (User)
@@ -378,6 +400,7 @@ Response: { "message": "added" } or { "message": "removed" }
 ```
 
 #### OrderItem
+
 ```python
 - id: Integer (Primary Key)
 - order: Foreign Key (Order)
@@ -386,6 +409,7 @@ Response: { "message": "added" } or { "message": "removed" }
 ```
 
 #### WishlistItem
+
 ```python
 - id: Integer (Primary Key)
 - user: Foreign Key (User)
@@ -398,6 +422,7 @@ Response: { "message": "added" } or { "message": "removed" }
 ## 🏗️ Project Architecture
 
 ### Frontend Architecture
+
 ```
 User Interface (React Components)
         ↓
@@ -409,6 +434,7 @@ Django REST Backend
 ```
 
 ### Data Flow
+
 1. User logs in → AuthContext stores user data & localStorage
 2. User adds to cart → CartContext manages items & localStorage
 3. User adds to wishlist → Both localStorage & backend sync
@@ -418,16 +444,19 @@ Django REST Backend
 ### Key Features Implementation
 
 **Wishlist System:**
+
 - Local storage for instant UI feedback
 - Backend sync for persistence across devices
 - Per-user tracking via email
 
 **Cart System:**
+
 - localStorage persistence
 - Real-time total calculation
 - Drawer-based UI
 
 **Dialog System:**
+
 - Replaces browser alerts
 - Styled popups for success/error/info
 - Smooth animations
@@ -436,17 +465,17 @@ Django REST Backend
 
 ## 📝 Frontend Pages
 
-| Page | Route | Purpose |
-|------|-------|---------|
-| Home | `/` | Hero section & featured products |
-| Shop | `/shop` | Browse all products |
-| Product Details | `/product/:id` | View single product details |
-| Cart | `/cart` | View & manage cart items |
-| Checkout | `/checkout` | Order placement with delivery info |
-| Wishlist | `/wishlist` | View saved items (authenticated) |
-| Orders | `/orders` | View order history (authenticated) |
-| Login | `/login` | User authentication |
-| Register | `/register` | New user registration |
+| Page            | Route          | Purpose                            |
+| --------------- | -------------- | ---------------------------------- |
+| Home            | `/`            | Hero section & featured products   |
+| Shop            | `/shop`        | Browse all products                |
+| Product Details | `/product/:id` | View single product details        |
+| Cart            | `/cart`        | View & manage cart items           |
+| Checkout        | `/checkout`    | Order placement with delivery info |
+| Wishlist        | `/wishlist`    | View saved items (authenticated)   |
+| Orders          | `/orders`      | View order history (authenticated) |
+| Login           | `/login`       | User authentication                |
+| Register        | `/register`    | New user registration              |
 
 ---
 
@@ -455,11 +484,13 @@ Django REST Backend
 Contributions are welcome! Here's how to contribute:
 
 1. **Fork the repository**
+
    ```bash
    git clone https://github.com/maehnoor16/giftology.git
    ```
 
 2. **Create a feature branch**
+
    ```bash
    git checkout -b feature/AmazingFeature
    ```
@@ -470,11 +501,13 @@ Contributions are welcome! Here's how to contribute:
    - Test thoroughly
 
 4. **Commit your changes**
+
    ```bash
    git commit -m 'Add some AmazingFeature'
    ```
 
 5. **Push to the branch**
+
    ```bash
    git push origin feature/AmazingFeature
    ```
@@ -494,6 +527,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 👥 Author
 
 **Mahnoor**
+
 - GitHub: [@maehnoor16](https://github.com/maehnoor16)
 - Project: [Giftology](https://github.com/maehnoor16/giftology)
 
