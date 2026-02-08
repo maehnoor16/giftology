@@ -179,32 +179,32 @@ Day 1
 │
 ├─ 10:00 AM: Create GitHub Account & Push Code
 │            Time: 5 minutes
-│            
+│
 ├─ 10:05 AM: Go to Render.com, Create Account
-│            
+│
 ├─ 10:10 AM: Create PostgreSQL Database
 │            Time: 10 minutes
 │            (Wait for: "Database Created Successfully")
-│            
+│
 ├─ 10:20 AM: Create Web Service on Render
 │            Time: 10 minutes
 │            (Watch the build...)
-│            
+│
 ├─ 10:30 AM: Go to Vercel.com, Create Account
-│            
+│
 ├─ 10:35 AM: Deploy Frontend on Vercel
 │            Time: 5 minutes
 │            (Watch the build...)
-│            
+│
 ├─ 10:40 AM: Update API URL if needed
 │            Time: 2 minutes
-│            
+│
 ├─ 10:42 AM: Create Admin User
 │            Time: 2 minutes
-│            
+│
 ├─ 10:44 AM: Test Everything
 │            Time: 5 minutes
-│            
+│
 └─ 10:49 AM: 🎉 LAUNCH! Your app is live!
 ```
 

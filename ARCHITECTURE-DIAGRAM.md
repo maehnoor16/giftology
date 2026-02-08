@@ -147,7 +147,7 @@ USER VISIT: https://giftology.vercel.app
 
 
                     ↓↓↓ ALL API CALLS GO TO ↓↓↓
-                    
+
 ┌─────────────────────────────────────┐
 │  Render Backend                     │
 │  https://giftology-backend.onrender │
@@ -417,7 +417,7 @@ LOCAL DEVELOPMENT
          ▼
     .env.local
     REACT_APP_API_URL=http://127.0.0.1:8000/api/
-    
+
          │
          ▼
 ┌─────────────────────┐
@@ -453,7 +453,7 @@ PRODUCTION DEPLOYMENT
          ▼
     .env.production
     REACT_APP_API_URL=https://giftology-backend.onrender.com/api/
-    
+
          │
          ▼
 ┌──────────────────────────────┐
@@ -473,7 +473,7 @@ PRODUCTION DEPLOYMENT
     ALLOWED_HOSTS = [
         'giftology-backend.onrender.com'
     ]
-    
+
     CORS_ALLOWED_ORIGINS = [
         'https://giftology.vercel.app'
     ]
