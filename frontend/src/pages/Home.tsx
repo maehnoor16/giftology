@@ -6,9 +6,26 @@ const Home = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [search, setSearch] = useState('');
   const [banner, setBanner] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    api.get('products/').then(res => setProducts(res.data));
+    const fetchProducts = async () => {
+      try {
+        console.log('Fetching products from API...');
+        const res = await api.get('products/');
+        console.log('Products received:', res.data);
+        setProducts(res.data);
+        setError('');
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setError('Failed to load products');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
 
     const interval = setInterval(() => {
       setBanner(b => (b + 1) % 3);
@@ -33,6 +50,9 @@ const Home = () => {
       </div>
 
       <div className="container">
+        {error && <p style={{ color: 'red' }}>❌ {error}</p>}
+        {loading && <p>Loading products...</p>}
+
         <input
           placeholder="Search gifts..."
           style={{
@@ -45,6 +65,10 @@ const Home = () => {
           }}
           onChange={e => setSearch(e.target.value)}
         />
+
+        {!loading && products.length === 0 && (
+          <p>No products available. Please add products from the admin panel.</p>
+        )}
 
         <div className="grid">
           {filtered.map((p: any) => (
