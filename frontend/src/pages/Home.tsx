@@ -2,12 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../api';
 import ProductCard from '../components/ProductCard';
 
-const categories = ['All', 'Birthday', 'Anniversary', 'Kids', 'Luxury', 'Flowers'];
-
 const Home = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('All');
   const [banner, setBanner] = useState(0);
 
   useEffect(() => {
@@ -22,8 +19,7 @@ const Home = () => {
 
   const filtered = products.filter(p => {
     const matchName = p.name.toLowerCase().includes(search.toLowerCase());
-    const matchCat = category === 'All' || p.category === category;
-    return matchName && matchCat;
+    return matchName;
   });
 
   return (
@@ -37,18 +33,6 @@ const Home = () => {
       </div>
 
       <div className="container">
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 25 }}>
-          {categories.map(c => (
-            <button
-              key={c}
-              className={`button ${category === c ? '' : 'secondary'}`}
-              onClick={() => setCategory(c)}
-            >
-              {c}
-            </button>
-          ))}
-        </div>
-
         <input
           placeholder="Search gifts..."
           style={{

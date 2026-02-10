@@ -7,14 +7,12 @@ const Shop = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('All');
-
-  const categories = ['All', 'Birthday', 'Anniversary', 'Kids', 'Luxury', 'Flowers'];
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const res = await api.get('products/');
+        console.log('Products fetched:', res.data);
         setProducts(res.data);
         setLoading(false);
       } catch (err) {
@@ -29,8 +27,7 @@ const Shop = () => {
 
   const filtered = products.filter(p => {
     const matchName = p.name.toLowerCase().includes(search.toLowerCase());
-    const matchCat = category === 'All' || p.category === category;
-    return matchName && matchCat;
+    return matchName;
   });
 
   if (loading) return <div style={{ padding: 20 }}><h2>Loading products...</h2></div>;
@@ -39,18 +36,6 @@ const Shop = () => {
   return (
     <div style={{ padding: 20 }}>
       <h2>🛍 Shop</h2>
-
-      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 25 }}>
-        {categories.map(c => (
-          <button
-            key={c}
-            className={`button ${category === c ? '' : 'secondary'}`}
-            onClick={() => setCategory(c)}
-          >
-            {c}
-          </button>
-        ))}
-      </div>
 
       <input
         placeholder="Search gifts..."
@@ -67,7 +52,7 @@ const Shop = () => {
       />
 
       {filtered.length === 0 ? (
-        <p>No products available. Please add products from the admin panel.</p>
+        <p>{products.length > 0 ? 'No products match your search.' : 'No products available. Please add products from the admin panel.'}</p>
       ) : (
         <div className="grid">
           {filtered.map((p: any) => (
