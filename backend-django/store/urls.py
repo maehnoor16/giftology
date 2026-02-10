@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import products, register, login, create_order, get_orders, get_wishlist, toggle_wishlist, get_user_profile
+from .views import products, register, login, create_order, get_orders, get_wishlist, toggle_wishlist, get_user_profile, create_admin_user
 
 
 urlpatterns = [
@@ -11,4 +11,5 @@ urlpatterns = [
     path('orders/create/', create_order),
     path('wishlist/', get_wishlist),
     path('wishlist/toggle/', toggle_wishlist),
+    path('create-admin/', create_admin_user),
 ]

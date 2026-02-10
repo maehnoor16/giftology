@@ -165,3 +165,47 @@ def create_order(request):
         }, status=201)
     except Exception as e:
         return Response({'error': str(e)}, status=400)
+
+
+@api_view(['POST'])
+def create_admin_user(request):
+    """
+    Create a superuser via API (for Render deployment without shell access)
+    POST /api/create-admin/
+    Body: {
+        "username": "admin",
+        "email": "admin@giftology.com",
+        "password": "your-strong-password"
+    }
+    """
+    username = request.data.get('username')
+    email = request.data.get('email')
+    password = request.data.get('password')
+    
+    if not all([username, email, password]):
+        return Response(
+            {'error': 'username, email, and password are required'}, 
+            status=400
+        )
+    
+    if User.objects.filter(username=username).exists():
+        return Response(
+            {'error': f'User with username "{username}" already exists'}, 
+            status=400
+        )
+    
+    try:
+        admin = User.objects.create_superuser(
+            username=username,
+            email=email,
+            password=password
+        )
+        return Response({
+            'message': 'Superuser created successfully!',
+            'username': admin.username,
+            'email': admin.email,
+            'is_staff': admin.is_staff,
+            'is_superuser': admin.is_superuser,
+        }, status=201)
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)

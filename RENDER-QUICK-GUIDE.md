@@ -17,6 +17,7 @@
 ## 📋 Step-by-Step Checklist
 
 ### **PART 1: Account Setup (5 mins)**
+
 ```
 □ Go to https://render.com
 □ Click "Sign Up"
@@ -26,6 +27,7 @@
 ```
 
 ### **PART 2: Create Database (5 mins)**
+
 ```
 □ Click "New +"
 □ Select "PostgreSQL"
@@ -45,6 +47,7 @@
 ```
 
 ### **PART 3: Create Web Service (2 mins)**
+
 ```
 □ Click "New +"
 □ Select "Web Service"
@@ -59,20 +62,25 @@
 ```
 
 ### **PART 4: Build & Start Commands (1 min)**
+
 ```
 Build Command:
 □ Copy-paste:
-pip install -r requirements.txt && cd backend-django && python manage.py migrate && python manage.py collectstatic --noinput
+pip install -r requirements.txt && python manage.py migrate && python manage.py create_superuser && python manage.py collectstatic --noinput
 
 Start Command:
 □ Copy-paste:
-cd backend-django && gunicorn giftology_backend.wsgi:application --bind 0.0.0.0:$PORT
+gunicorn giftology_backend.wsgi:application --bind 0.0.0.0:$PORT
 
 Plan:
 □ Select "Free"
 ```
 
+⚠️ IMPORTANT: Do NOT include "cd backend-django" in commands!
+Render already navigates to the Root Directory automatically.
+
 ### **PART 5: Environment Variables (3 mins)**
+
 ```
 Click "Advanced" then add each:
 
@@ -91,9 +99,19 @@ Click "Advanced" then add each:
 
 □ CORS_ALLOWED_ORIGINS
   Value: https://giftology.vercel.app,http://localhost:3000
+
+□ ADMIN_EMAIL
+  Value: mahnoor@gmail.com
+
+□ ADMIN_USERNAME
+  Value: mahnoor
+
+□ ADMIN_PASSWORD
+  Value: RSCI@29061
 ```
 
 ### **PART 6: Deploy (5-10 mins)**
+
 ```
 □ Review all settings
 □ Click "Create Web Service"
@@ -104,6 +122,7 @@ Click "Advanced" then add each:
 ```
 
 ### **PART 7: Create Admin User (2 mins)**
+
 ```
 □ Click "Shell" button in service
 □ Run: cd backend-django && python manage.py createsuperuser
@@ -114,6 +133,7 @@ Click "Advanced" then add each:
 ```
 
 ### **PART 8: Update Frontend (1 min)**
+
 ```
 □ Go to Vercel dashboard
 □ Select giftology project
@@ -124,6 +144,7 @@ Click "Advanced" then add each:
 ```
 
 ### **PART 9: Test Everything (5 mins)**
+
 ```
 □ Check API: https://giftology-backend.onrender.com/api/products/
   (Should show JSON data)
@@ -166,30 +187,30 @@ CORS_ALLOWED_ORIGINS=https://giftology.vercel.app,http://localhost:3000
 
 ## 🆘 Quick Troubleshooting
 
-| Problem | Fix |
-|---------|-----|
-| Build fails | Check requirements.txt has all packages |
-| Can't connect to DB | Verify DATABASE_URL in env vars |
-| CORS error | Update CORS_ALLOWED_ORIGINS |
-| Admin won't load | Make sure you created superuser in shell |
-| API returns 404 | Check ALLOWED_HOSTS in env vars |
-| Frontend can't reach API | Verify REACT_APP_API_URL in Vercel |
+| Problem                  | Fix                                      |
+| ------------------------ | ---------------------------------------- |
+| Build fails              | Check requirements.txt has all packages  |
+| Can't connect to DB      | Verify DATABASE_URL in env vars          |
+| CORS error               | Update CORS_ALLOWED_ORIGINS              |
+| Admin won't load         | Make sure you created superuser in shell |
+| API returns 404          | Check ALLOWED_HOSTS in env vars          |
+| Frontend can't reach API | Verify REACT_APP_API_URL in Vercel       |
 
 ---
 
 ## ⏱️ Total Time Estimate
 
-| Task | Time |
-|------|------|
-| Setup account | 5 min |
-| Create database | 5 min |
-| Create web service | 2 min |
-| Add env variables | 3 min |
-| Deploy backend | 10 min |
-| Create admin user | 2 min |
-| Update frontend | 1 min |
-| Testing | 5 min |
-| **TOTAL** | **~33 mins** |
+| Task               | Time         |
+| ------------------ | ------------ |
+| Setup account      | 5 min        |
+| Create database    | 5 min        |
+| Create web service | 2 min        |
+| Add env variables  | 3 min        |
+| Deploy backend     | 10 min       |
+| Create admin user  | 2 min        |
+| Update frontend    | 1 min        |
+| Testing            | 5 min        |
+| **TOTAL**          | **~33 mins** |
 
 ---
 
@@ -202,7 +223,7 @@ CORS_ALLOWED_ORIGINS=https://giftology.vercel.app,http://localhost:3000
 ✅ Admin panel works  
 ✅ Frontend loads products  
 ✅ Auto-fill checkout works  
-✅ Orders save to database  
+✅ Orders save to database
 
 **All checked = LIVE! 🎉**
 
