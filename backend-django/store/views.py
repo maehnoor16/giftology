@@ -9,15 +9,22 @@ from django.contrib.auth.models import User
 from .models import Product, Order, OrderItem
 from .models import WishlistItem
 from .serializers import ProductSerializer, RegisterSerializer, OrderSerializer, WishlistItemSerializer
+import logging
 
-
+logger = logging.getLogger(__name__)
 
 
 @api_view(['GET'])
 def products(request):
-    products = Product.objects.all()
-    serializer = ProductSerializer(products, many=True)
-    return Response(serializer.data)
+    try:
+        products = Product.objects.all()
+        logger.info(f"Fetched {products.count()} products")
+        serializer = ProductSerializer(products, many=True)
+        logger.info(f"Serialized data: {serializer.data}")
+        return Response(serializer.data)
+    except Exception as e:
+        logger.error(f"Error fetching products: {str(e)}")
+        return Response({'error': str(e)}, status=500)
 
 
 
