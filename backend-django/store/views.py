@@ -26,6 +26,14 @@ def products(request):
         logger.error(f"Error fetching products: {str(e)}")
         return Response({'error': str(e)}, status=500)
 
+@api_view(['GET'])
+def product_detail(request, id):
+    try:
+        product = Product.objects.get(id=id)
+        serializer = ProductSerializer(product)
+        return Response(serializer.data)
+    except Product.DoesNotExist:
+        return Response({'error': 'Product not found'}, status=404)
 
 
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { api } from '../api';
 import ProductCard from '../components/ProductCard';
 
@@ -46,7 +47,9 @@ const Home = () => {
           {['Perfect Gifts 🎁', 'Make Moments Special 💖', 'Surprise Loved Ones 🎉'][banner]}
         </h1>
         <p>Premium curated gifts for every occasion.</p>
-        <button>Shop Now</button>
+        {
+         <button>Shop Now</button>
+        }
       </div>
 
       <div className="container">

@@ -1,25 +1,53 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { api } from '../api';
-import { addToCart } from '../utils/cart';
+import { useCart } from '../context/CartContext';
+import { useCartUI } from '../context/CartUIContext';
+
 
 const ProductDetails = () => {
   const { id } = useParams();
   const [product, setProduct] = useState<any>(null);
+  const { addToCart } = useCart();
+  const { openCart } = useCartUI();
+
 
   useEffect(() => {
-    api.get(`products/${id}/`).then(res => setProduct(res.data));
+  console.log("ID from params:", id);
+
+  api.get(`products/${id}/`)
+    .then(res => {
+      console.log("Product response:", res.data);
+      setProduct(res.data);
+    })
+    .catch(err => {
+      console.error("API Error:", err);
+    });
   }, [id]);
 
   if (!product) return <p style={{ padding: 30 }}>Loading...</p>;
 
   return (
     <div className="container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40 }}>
-      <img
-        src={product.image}
-        alt={product.name}
-        style={{ width: '100%', borderRadius: 20 }}
-      />
+      <div
+        style={{
+          width: '100%',
+          height: '400px',
+          overflow: 'hidden',
+          borderRadius: 20
+        }}
+      >
+        <img
+          src={product.image}
+          alt={product.name}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain'
+          }}
+        />
+      </div>
+
 
       <div>
         <h2>{product.name}</h2>
@@ -30,9 +58,16 @@ const ProductDetails = () => {
           className="button"
           style={{ marginTop: 20, padding: '12px 22px' }}
           onClick={() => {
-            addToCart(product);
-            window.dispatchEvent(new Event('storage'));
+            addToCart({
+              id: product.id,
+              name: product.name,
+              price: product.price,
+              image: product.image,
+              qty: 1,
+            });
+            openCart();
           }}
+
         >
           Add to Cart
         </button>
