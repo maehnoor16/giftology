@@ -12,6 +12,8 @@ const ProductCard: FC<Props> = ({ product }) => {
   const { addToCart } = useCart();
   const { openCart } = useCartUI();
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const isOutOfStock = product.stock <= 0;
+
 
   useEffect(() => {
     setIsWishlisted(inWishlist(product.id));
@@ -56,6 +58,23 @@ return (
       >
         {isWishlisted ? '❤️' : '🤍'}
       </button>
+      {isOutOfStock && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 10,
+            left: 10,
+            backgroundColor: '#ff4d4f',
+            color: 'white',
+            padding: '5px 10px',
+            borderRadius: 6,
+            fontSize: 12,
+            fontWeight: 'bold'
+          }}
+        >
+          OUT OF STOCK
+        </div>
+      )}
     </div>
 
     <div className="card-body">
@@ -70,13 +89,19 @@ return (
 
       <button
         className="button"
+        disabled={isOutOfStock}
+        style={{
+          backgroundColor: isOutOfStock ? '#ccc' : '',
+          cursor: isOutOfStock ? 'not-allowed' : 'pointer'
+        }}
         onClick={(e) => {
           e.stopPropagation();
-          handleAddToCart();
+          if (!isOutOfStock) handleAddToCart();
         }}
       >
-        Add to Cart
+        {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
       </button>
+
     </div>
   </div>
 );

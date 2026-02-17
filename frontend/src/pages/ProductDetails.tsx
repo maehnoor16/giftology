@@ -10,6 +10,8 @@ const ProductDetails = () => {
   const [product, setProduct] = useState<any>(null);
   const { addToCart } = useCart();
   const { openCart } = useCartUI();
+  const isOutOfStock = product?.stock <= 0;
+
 
 
   useEffect(() => {
@@ -52,25 +54,33 @@ const ProductDetails = () => {
       <div>
         <h2>{product.name}</h2>
         <p style={{ margin: '15px 0', color: '#555' }}>{product.description}</p>
-        <h3 style={{ color: '#3fa9f5' }}>${product.price}</h3>
+        <h3 style={{ color: '#3fa9f5' }}>Rs.{product.price}</h3>
 
         <button
           className="button"
-          style={{ marginTop: 20, padding: '12px 22px' }}
-          onClick={() => {
-            addToCart({
-              id: product.id,
-              name: product.name,
-              price: product.price,
-              image: product.image,
-              qty: 1,
-            });
-            openCart();
+          disabled={isOutOfStock}
+          style={{
+            marginTop: 20,
+            padding: '12px 22px',
+            backgroundColor: isOutOfStock ? '#ccc' : '',
+            cursor: isOutOfStock ? 'not-allowed' : 'pointer'
           }}
-
+          onClick={() => {
+            if (!isOutOfStock) {
+              addToCart({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.image,
+                qty: 1,
+              });
+              openCart();
+            }
+          }}
         >
-          Add to Cart
+          {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
         </button>
+
       </div>
     </div>
   );
