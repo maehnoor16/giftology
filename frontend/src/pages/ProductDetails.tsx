@@ -30,60 +30,50 @@ const ProductDetails = () => {
   if (!product) return <p style={{ padding: 30 }}>Loading...</p>;
 
   return (
-    <div className="container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40 }}>
-      <div
-        style={{
-          width: '100%',
-          height: '400px',
-          overflow: 'hidden',
-          borderRadius: 20
+  <div className="product-details">
+
+    <div className="product-image-wrapper">
+      <img
+        src={product.image}
+        alt={product.name}
+        className="product-image"
+      />
+    </div>
+
+    <div className="product-info">
+      <h2>{product.name}</h2>
+
+      <p className="product-description">
+        {product.description}
+      </p>
+
+      <h3 className="product-price">
+        Rs.{product.price}
+      </h3>
+
+      <button
+        className="button product-btn"
+        disabled={isOutOfStock}
+        onClick={() => {
+          if (!isOutOfStock) {
+            addToCart({
+              id: product.id,
+              name: product.name,
+              price: product.price,
+              image: product.image,
+              qty: 1,
+            });
+            openCart();
+          }
         }}
       >
-        <img
-          src={product.image}
-          alt={product.name}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain'
-          }}
-        />
-      </div>
-
-
-      <div>
-        <h2>{product.name}</h2>
-        <p style={{ margin: '15px 0', color: '#555' }}>{product.description}</p>
-        <h3 style={{ color: '#3fa9f5' }}>Rs.{product.price}</h3>
-
-        <button
-          className="button"
-          disabled={isOutOfStock}
-          style={{
-            marginTop: 20,
-            padding: '12px 22px',
-            backgroundColor: isOutOfStock ? '#ccc' : '',
-            cursor: isOutOfStock ? 'not-allowed' : 'pointer'
-          }}
-          onClick={() => {
-            if (!isOutOfStock) {
-              addToCart({
-                id: product.id,
-                name: product.name,
-                price: product.price,
-                image: product.image,
-                qty: 1,
-              });
-              openCart();
-            }
-          }}
-        >
-          {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
-        </button>
-
-      </div>
+        {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
+      </button>
     </div>
-  );
+
+  </div>
+);
+
 };
 
 export default ProductDetails;

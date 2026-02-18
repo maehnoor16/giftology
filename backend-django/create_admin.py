@@ -17,7 +17,7 @@ User.objects.filter(username='mahnoor').delete()
 try:
     admin = User.objects.create_superuser(
         username='mahnoor',
-        email='mahnoor@email.com',
+        email='mahnoor@gmail.com',
         password='RSCI@29061'
     )
     print(f"✓ Superuser created successfully!")

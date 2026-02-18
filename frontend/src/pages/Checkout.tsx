@@ -41,14 +41,10 @@ const Checkout = () => {
             phone: profileData.phone || '',
           }));
         } catch (error) {
-          // If profile fetch fails, just use basic user info
-          setFormData(prevData => ({
-            ...prevData,
-            email: user.email || '',
-          }));
+      console.error("Profile fetch failed", error);
+          }
         }
       }
-    };
 
     fetchUserProfile();
   }, [user]);
@@ -113,7 +109,13 @@ const Checkout = () => {
     <div className="checkout-layout">
       <div className="left">
         <h3>Contact</h3>
-        <input placeholder="Email" name="email" value={formData.email} onChange={handleChange} />
+        <input
+          placeholder="Email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          disabled={!!user}
+        />
 
         <h3>Delivery</h3>
         <div className="delivery-info">

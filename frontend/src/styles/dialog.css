@@ -60,25 +60,44 @@
 }
 
 .dialog-header.dialog-info {
-  background: linear-gradient(135deg, #3FA9F5 0%, #0A2540 100%);
+  background-color: #E8F4FD;
+  border-bottom: 1px solid #D0E6FA;
+}
+
+.dialog-header.dialog-info h2 {
+  color: #1E6FA8;
 }
 
 .dialog-header.dialog-success {
-  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  background-color: #EAF9F1;
+  border-bottom: 1px solid #C8EEDB;
+}
+
+.dialog-header.dialog-success h2 {
+  color: #1E8E5A;
 }
 
 .dialog-header.dialog-error {
-  background: linear-gradient(135deg, #3FA9F5 0%, #fa709a 100%);
+  background-color: #FDECEC;
+  border-bottom: 1px solid #F8CACA;
+}
+
+.dialog-header.dialog-error h2 {
+  color: #C0392B;
 }
 
 .dialog-header.dialog-warning {
-  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  background-color: #FFF8E6;
+  border-bottom: 1px solid #FFE7B3;
 }
 
+.dialog-header.dialog-warning h2 {
+  color: #B7791F;
+}
 .dialog-close {
   background: none;
   border: none;
-  color: white;
+  color: black;
   font-size: 24px;
   cursor: pointer;
   padding: 0;
@@ -151,15 +170,41 @@
   transform: scale(1.05);
 }
 
-/* Responsive */
-@media (max-width: 600px) {
-  .dialog-content {
-    width: 95%;
-    max-height: 90vh;
+/* ========================================= */
+/* Mobile Responsive Enhancement */
+/* ========================================= */
+
+@media (max-width: 768px) {
+
+  .dialog-overlay {
+    padding: 0;
+    align-items: center;
+    justify-content: center; 
+  }
+
+ .dialog-content::-webkit-scrollbar {
+    display: none;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 16px 16px 0 0;
+    max-height: 85vh;
+    animation: slideUpMobile 0.3s ease-out;
+    scrollbar-width: none;
+  }
+
+  @keyframes slideUpMobile {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
   }
 
   .dialog-header {
-    padding: 15px;
+    padding: 16px;
   }
 
   .dialog-header h2 {
@@ -167,15 +212,35 @@
   }
 
   .dialog-body {
-    padding: 20px 15px;
+    padding: 18px 16px;
+    font-size: 14px;
   }
 
   .dialog-footer {
     flex-direction: column-reverse;
-    gap: 8px;
+    gap: 10px;
+    padding: 16px;
   }
 
   .dialog-btn {
     width: 100%;
+    padding: 12px;
+    font-size: 14px;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 400px) {
+  .dialog-header h2 {
+    font-size: 16px;
+  }
+
+  .dialog-body {
+    font-size: 13px;
+  }
+
+  .dialog-btn {
+    font-size: 13px;
+    padding: 10px;
   }
 }

@@ -1,14 +1,16 @@
 # from django.shortcuts import render
 
 # Create your views here.
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from .models import Product, Order, OrderItem
 from .models import WishlistItem
-from .serializers import ProductSerializer, RegisterSerializer, OrderSerializer, WishlistItemSerializer
+from rest_framework.authtoken.models import Token
+from .serializers import ProductSerializer, RegisterSerializer, OrderSerializer, UserSerializer, WishlistItemSerializer
 import logging
 
 logger = logging.getLogger(__name__)
@@ -46,39 +48,64 @@ def register(request):
     return Response(serializer.errors, status=400)
 
 
-
+def create(self, validated_data):
+    validated_data['username'] = validated_data['email']
+    return User.objects.create_user(**validated_data)
 
 @api_view(['POST'])
 def login(request):
-    user = authenticate(username=request.data['username'], password=request.data['password'])
-    if user:
-        return Response({'message': 'Login successful', 'user_id': user.id, 'email': user.email})
-    return Response({'error': 'Invalid credentials'}, status=401)
+    email = request.data.get('email')
+    password = request.data.get('password')
 
+    if not email or not password:
+        return Response(
+            {"error": "Email and password required"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        user_obj = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return Response(
+            {"error": "Invalid credentials"},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+
+    user = authenticate(username=user_obj.username, password=password)
+
+    if user is None:
+        return Response(
+            {"error": "Invalid credentials"},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+
+    token, _ = Token.objects.get_or_create(user=user)
+
+    return Response({
+        "key": token.key,
+        "email": user.email,
+        "first_name": user.first_name,
+        "last_name": user.last_name
+    })
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_user_profile(request):
-    email = request.query_params.get('email')
-    
-    if not email:
-        return Response({'error': 'Email parameter required'}, status=400)
-    
-    try:
-        user = User.objects.get(email=email)
-        # Try to get the most recent order to get delivery details
-        last_order = Order.objects.filter(user=user).order_by('-created_at').first()
-        
-        profile_data = {
-            'email': user.email,
-            'firstName': user.first_name,
-            'lastName': user.last_name,
-            'address': last_order.address if last_order else '',
-            'city': last_order.city if last_order else '',
-            'phone': last_order.phone if last_order else '',
-        }
-        return Response(profile_data)
-    except User.DoesNotExist:
-        return Response({'error': 'User not found'}, status=404)
+
+    user = request.user
+
+    last_order = Order.objects.filter(user=user).order_by('-created_at').first()
+
+    profile_data = {
+        'email': user.email,
+        'firstName': user.first_name,
+        'lastName': user.last_name,
+        'address': last_order.address if last_order else '',
+        'city': last_order.city if last_order else '',
+        'phone': last_order.phone if last_order else '',
+    }
+
+    return Response(profile_data)
 
 
 @api_view(['GET'])

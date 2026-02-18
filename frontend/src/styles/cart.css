@@ -141,3 +141,85 @@
 .checkout-btn:hover {
   background: #3fa9f5;
 }
+
+/* ================================= */
+/* Responsive Cart Drawer */
+/* ================================= */
+
+/* Tablets */
+@media (max-width: 992px) {
+  .cart-drawer {
+    width: 320px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 450px) {
+
+  .cart-drawer {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .cart-item {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .cart-item img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .cart-info h4 {
+    font-size: 12px;
+  }
+
+  .cart-info p {
+    font-size: 11px;
+  }
+
+  .qty-box {
+    width: 65px;
+  }
+
+  .checkout-btn {
+    font-size: 15px;
+    padding: 12px;
+  }
+}
+
+/* Small Phones */
+@media (max-width: 480px) {
+
+  .cart-header {
+    padding: 12px;
+  }
+
+  .cart-items {
+    padding: 10px;
+  }
+
+  .cart-item {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .cart-item img {
+    width: 55px;
+    height: 55px;
+  }
+
+  .qty-box {
+    width: 60px;
+  }
+
+  .delete-btn {
+    font-size: 18px;
+  }
+
+  .checkout-btn {
+    font-size: 14px;
+    padding: 11px;
+  }
+}

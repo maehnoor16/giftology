@@ -1,46 +1,66 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { api } from '../api';
 
 interface AuthContextType {
   user: any;
-  login: (userInfo: any) => void;
+  login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<any>(() => {
-    try {
-      const raw = localStorage.getItem('user');
-      return raw ? JSON.parse(raw) : null;
-    } catch {
-      return null;
-    }
-  });
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    // keep user in sync with localStorage
-    if (user) localStorage.setItem('user', JSON.stringify(user));
-    else localStorage.removeItem('user');
-  }, [user]);
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
-  const login = async (userInfo: any) => {
-    setUser(userInfo);
+  const login = async (email: string, password: string) => {
     try {
-      // fetch wishlist for this user and save locally for UI consistency
-      if (userInfo && userInfo.email) {
-        const resp = await api.get('wishlist/', { params: { email: userInfo.email } });
-        localStorage.setItem('wishlist', JSON.stringify(resp.data || []));
-      }
+      const res = await fetch("http://localhost:8000/api/login/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password
+        })
+      });
+
+      if (!res.ok) return false;
+
+      const data = await res.json();
+
+      localStorage.setItem("token", data.key);
+
+      const userRes = await fetch("http://localhost:8000/api/user/profile/", {
+        headers: {
+          Authorization: `Token ${data.key}`
+        }
+      });
+
+      if (!userRes.ok) return false;
+
+      const userData = await userRes.json();
+
+      localStorage.setItem("user", JSON.stringify(userData));
+      setUser(userData);
+
+      return true;
+
     } catch {
-      // ignore network errors; keep client-only wishlist
+      return false;
     }
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('wishlist');
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
   };
 
   return (

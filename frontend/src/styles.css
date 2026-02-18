@@ -56,10 +56,17 @@ a {
   font-size: 16px;
 }
 
+.hamburger {
+  display: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: var(--primary);
+}
+
 .cart-btn {
   background: var(--secondary);
   color: white;
-  padding: 8px 16px;
+  /* padding: 8px 16px; */
   border-radius: 8px;
   border: none;
   cursor: pointer;
@@ -276,5 +283,164 @@ a {
   }
   .navbar {
     padding: 14px 20px;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 70px;
+    right: 0;
+    background: white;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    padding: 20px;
+    gap: 20px;
+    display: none;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  }
+
+  .nav-links.active {
+    display: flex;
+  }
+
+  .hamburger {
+    display: block;
+  }
+
+  .nav-links a,
+  .nav-links button {
+    width: 100%;
+    text-align: left;
+    font-size: 18px;
+  }
+}
+
+/* Login signup button */
+.signup-text {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 14px;
+  color: #555;
+}
+
+.signup-link {
+  color: #007bff;   /* Branding blue */
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+}
+
+.terms-text {
+  margin-top: 10px;
+  font-size: 12px;
+  text-align: center;
+  color: #777;
+}
+
+.terms-link {
+  color: #007bff;
+  cursor: pointer;
+}
+
+.terms-link:hover {
+  text-decoration: underline;
+}
+
+.product-details {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+  align-items: center;
+}
+
+/* Image section */
+.product-image-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.product-image {
+  width: 100%;
+  max-width: 500px;
+  height: 400px;
+  object-fit: contain;
+  border-radius: 20px;
+}
+
+/* Content section */
+.product-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.product-description {
+  margin: 20px 0;
+  color: #555;
+  line-height: 1.6;
+}
+
+.product-price {
+  color: #3fa9f5;
+  font-size: 22px;
+  margin-bottom: 20px;
+}
+
+.product-btn {
+  padding: 14px 24px;
+  font-size: 15px;
+  width: fit-content;
+}
+
+/* =============================== */
+/* Tablet */
+@media (max-width: 992px) {
+  .product-details {
+    gap: 30px;
+  }
+
+  .product-image {
+    height: 350px;
+  }
+}
+
+/* =============================== */
+/* Mobile */
+@media (max-width: 768px) {
+  .product-details {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .product-image {
+    height: 300px;
+  }
+
+  .product-info {
+    align-items: center;
+  }
+
+  .product-btn {
+    width: 100%;
+  }
+}
+
+/* =============================== */
+/* Small phones */
+@media (max-width: 480px) {
+  .product-image {
+    height: 250px;
+  }
+
+  .product-price {
+    font-size: 20px;
   }
 }
