@@ -20,7 +20,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     try {
-      const res = await fetch("http://localhost:8000/api/login/", {
+      const res = await fetch("https://giftology-backend.onrender.com/api/login/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -37,7 +37,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       localStorage.setItem("token", data.key);
 
-      const userRes = await fetch("http://localhost:8000/api/user/profile/", {
+      const userRes = await fetch("https://giftology-backend.onrender.com/api/user/profile/", {
         headers: {
           Authorization: `Token ${data.key}`
         }
