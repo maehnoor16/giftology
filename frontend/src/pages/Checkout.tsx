@@ -10,10 +10,17 @@ const Checkout = () => {
   const { cart, total, clearCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
+
   const [loading, setLoading] = useState(false);
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMessage, setDialogMessage] = useState('');
   const [dialogType, setDialogType] = useState<'info' | 'success' | 'error'>('info');
+
+  const [discountPercent, setDiscountPercent] = useState(0);
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [couponApplied, setCouponApplied] = useState(false);
+
   const [formData, setFormData] = useState({
     email: '',
     firstName: '',
@@ -24,27 +31,38 @@ const Checkout = () => {
     couponCode: '',
   });
 
-  // Auto-fill form data when user is logged in
+  /* ===============================
+     Auto-fill when user logged in
+  ================================ */
   useEffect(() => {
     const fetchUserProfile = async () => {
-      if (user && user.email) {
+      if (user) {
         try {
-          const response = await api.get('user/profile/', { params: { email: user.email } });
+          const token = localStorage.getItem("token");
+
+          const response = await api.get('user/profile/', {
+            headers: {
+              Authorization: `Token ${token}`
+            }
+          });
+
           const profileData = response.data;
-          setFormData(prevData => ({
-            ...prevData,
-            email: profileData.email || user.email,
+
+          setFormData(prev => ({
+            ...prev,
+            email: profileData.email || '',
             firstName: profileData.firstName || '',
             lastName: profileData.lastName || '',
             address: profileData.address || '',
             city: profileData.city || '',
             phone: profileData.phone || '',
           }));
+
         } catch (error) {
-      console.error("Profile fetch failed", error);
-          }
+          console.error("Profile fetch failed", error);
         }
       }
+    };
 
     fetchUserProfile();
   }, [user]);
@@ -56,6 +74,48 @@ const Checkout = () => {
     });
   };
 
+  /* ===============================
+     Apply Coupon
+  ================================ */
+  const handleApplyCoupon = async () => {
+    if (!formData.couponCode) {
+      setDialogType('error');
+      setDialogMessage('Please enter coupon code');
+      setDialogOpen(true);
+      return;
+    }
+
+    try {
+      const response = await api.post('coupon/validate/', {
+        code: formData.couponCode
+      });
+
+      const percent = response.data.discount_percent;
+      const subtotalWithShipping = total + 199;
+      const discount = (subtotalWithShipping * percent) / 100;
+
+      setDiscountPercent(percent);
+      setDiscountAmount(discount);
+      setCouponApplied(true);
+
+      setDialogType('success');
+      setDialogMessage(`🎉 ${percent}% discount applied successfully!`);
+      setDialogOpen(true);
+
+    } catch (error) {
+      setDiscountPercent(0);
+      setDiscountAmount(0);
+      setCouponApplied(false);
+
+      setDialogType('error');
+      setDialogMessage('Invalid or expired coupon');
+      setDialogOpen(true);
+    }
+  };
+
+  /* ===============================
+     Place Order
+  ================================ */
   const handlePlaceOrder = async () => {
     if (!formData.email || !formData.firstName || !formData.lastName || !formData.address || !formData.city || !formData.phone) {
       setDialogType('error');
@@ -72,7 +132,10 @@ const Checkout = () => {
     }
 
     setLoading(true);
+
     try {
+      const finalTotal = total + 199 - discountAmount;
+
       const orderData = {
         email: formData.email,
         first_name: formData.firstName,
@@ -80,21 +143,24 @@ const Checkout = () => {
         address: formData.address,
         city: formData.city,
         phone: formData.phone,
-        coupon_code: formData.couponCode || null,
-        total_price: total + 199,
+        coupon_code: couponApplied ? formData.couponCode : null,
+        total_price: finalTotal,
         items: cart.map(item => ({
           product_id: item.id,
           quantity: item.qty,
-          price: item.price,
         })),
       };
 
-      const response = await api.post('orders/create/', orderData);
+      await api.post('orders/create/', orderData);
+
       setDialogType('success');
       setDialogMessage('🎉 Order placed successfully! Your order will be delivered in 2-4 working days.');
       setDialogOpen(true);
+
       clearCart();
+
       setTimeout(() => navigate('/'), 2000);
+
     } catch (error) {
       console.error('Error placing order:', error);
       setDialogType('error');
@@ -105,10 +171,16 @@ const Checkout = () => {
     }
   };
 
+  const subtotalWithShipping = total + 199;
+  const finalTotal = subtotalWithShipping - discountAmount;
+
   return (
     <div className="checkout-layout">
+
+      {/* LEFT SIDE */}
       <div className="left">
         <h3>Contact</h3>
+
         <input
           placeholder="Email"
           name="email"
@@ -118,6 +190,7 @@ const Checkout = () => {
         />
 
         <h3>Delivery</h3>
+
         <div className="delivery-info">
           <div className="info-box">
             <strong>🚚 Delivery Type:</strong>
@@ -136,29 +209,71 @@ const Checkout = () => {
         <input placeholder="Phone" name="phone" value={formData.phone} onChange={handleChange} />
 
         <h3>Coupon Code <span className="optional">(Optional)</span></h3>
-        <input placeholder="Enter coupon code (if any)" name="couponCode" value={formData.couponCode} onChange={handleChange} />
+
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <input
+            placeholder="Enter coupon code"
+            name="couponCode"
+            value={formData.couponCode}
+            onChange={handleChange}
+          />
+         <button
+            type="button"
+            className="button coupon-btn"
+            onClick={handleApplyCoupon}
+            disabled={couponApplied}
+          >
+            {couponApplied ? 'Applied' : 'Apply'}
+          </button>
+        </div>
       </div>
 
+      {/* RIGHT SIDE */}
       <div className="right">
         {cart.map(i => (
           <div key={i.id} className="checkout-item">
-            <img src={i.image} />
+            <img src={i.image} alt={i.name} />
             <span>{i.name}</span>
             <strong>Rs.{i.price}</strong>
           </div>
         ))}
+
         <hr />
-        <div className="row"><span>Subtotal</span><span>Rs.{total}</span></div>
-        <div className="row"><span>Shipping</span><span>Rs.199</span></div>
-        <div className="row total"><strong>Total</strong><strong>Rs.{total + 199}</strong></div>
-        <button className="pay-btn" onClick={handlePlaceOrder} disabled={loading}>
+
+        <div className="row">
+          <span>Subtotal</span>
+          <span>Rs.{total}</span>
+        </div>
+
+        <div className="row">
+          <span>Shipping</span>
+          <span>Rs.199</span>
+        </div>
+
+        {couponApplied && (
+          <div className="row">
+            <span>Discount ({discountPercent}%)</span>
+            <span>- Rs.{discountAmount.toFixed(0)}</span>
+          </div>
+        )}
+
+        <div className="row total">
+          <strong>Total</strong>
+          <strong>Rs.{finalTotal.toFixed(0)}</strong>
+        </div>
+
+        <button
+          className="pay-btn"
+          onClick={handlePlaceOrder}
+          disabled={loading}
+        >
           {loading ? 'Processing...' : 'Place Order'}
         </button>
       </div>
 
       <Dialog
         open={dialogOpen}
-        title={dialogType === 'success' ? '✅ Success!' : dialogType === 'error' ? ' Error' : 'ℹ️ Info'}
+        title={dialogType === 'success' ? 'Success' : dialogType === 'error' ? 'Error' : 'Info'}
         message={dialogMessage}
         onClose={() => setDialogOpen(false)}
         type={dialogType}

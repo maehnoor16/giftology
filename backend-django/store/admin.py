@@ -1,7 +1,7 @@
 
 # Register your models here.
 from django.contrib import admin
-from .models import Product, Order, OrderItem
+from .models import Product, Order, OrderItem,Coupon
 
 
 class OrderItemInline(admin.TabularInline):
@@ -52,3 +52,4 @@ class OrderAdmin(admin.ModelAdmin):
 
 admin.site.register(Product)
 admin.site.register(Order, OrderAdmin)
+admin.site.register(Coupon)

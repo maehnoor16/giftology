@@ -53,3 +53,14 @@ class WishlistItem(models.Model):
 
     def __str__(self):
         return f"WishlistItem: {self.user.email} - {self.product.name}"
+
+from django.db import models
+
+class Coupon(models.Model):
+    code = models.CharField(max_length=50, unique=True)
+    discount_percent = models.PositiveIntegerField()  # 5, 10, 15 etc
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.code} ({self.discount_percent}%)"

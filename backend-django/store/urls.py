@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import products, product_detail, register, login, create_order, get_orders, get_wishlist, toggle_wishlist, get_user_profile, create_admin_user
+from .views import validate_coupon
 
 
 urlpatterns = [
@@ -13,4 +14,6 @@ urlpatterns = [
     path('wishlist/', get_wishlist),
     path('wishlist/toggle/', toggle_wishlist),
     path('create-admin/', create_admin_user),
+    path('coupon/validate/', validate_coupon),
+
 ]

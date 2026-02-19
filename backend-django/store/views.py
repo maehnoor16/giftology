@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from .models import Product, Order, OrderItem
+from .models import Product, Order, OrderItem,Coupon
 from .models import WishlistItem
 from rest_framework.authtoken.models import Token
 from .serializers import ProductSerializer, RegisterSerializer, OrderSerializer, UserSerializer, WishlistItemSerializer
@@ -251,3 +251,22 @@ def create_admin_user(request):
         }, status=201)
     except Exception as e:
         return Response({'error': str(e)}, status=400)
+    
+@api_view(['POST'])
+def validate_coupon(request):
+    code = request.data.get('code')
+
+    if not code:
+        return Response({"error": "Coupon code required"}, status=400)
+
+    try:
+        coupon = Coupon.objects.get(code__iexact=code, active=True)
+        return Response({
+            "valid": True,
+            "discount_percent": coupon.discount_percent
+        })
+    except Coupon.DoesNotExist:
+        return Response({
+            "valid": False,
+            "error": "Invalid or expired coupon"
+        }, status=400)

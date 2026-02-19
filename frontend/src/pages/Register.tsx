@@ -84,7 +84,7 @@ const Register = () => {
     setDialogType("success");
     setDialogOpen(true);
 
-    setTimeout(() => navigate("/login"), 1500);
+    setTimeout(() => navigate("/"), 1500);
 
   } catch {
     setDialogTitle("Server Error");
