@@ -43,7 +43,14 @@ def product_detail(request, id):
 def register(request):
     serializer = RegisterSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
+        user = serializer.save()
+        
+        # Link guest orders to newly created user
+        Order.objects.filter(email=user.email, user=None).update(user=user)
+        
+        # Link guest wishlist items to newly created user
+        WishlistItem.objects.filter(email=user.email, user=None).update(user=user, email='')
+        
         return Response({'message': 'User created'}, status=201)
     return Response(serializer.errors, status=400)
 
@@ -117,11 +124,15 @@ def get_orders(request):
     
     try:
         user = User.objects.get(email=email)
+        # Get orders linked to user
         orders = Order.objects.filter(user=user).prefetch_related('items__product')
-        serializer = OrderSerializer(orders, many=True)
-        return Response(serializer.data)
     except User.DoesNotExist:
-        return Response([])
+        # No registered user, check for guest orders with this email
+        orders = Order.objects.filter(email=email, user=None).prefetch_related('items__product')
+    
+    serializer = OrderSerializer(orders, many=True)
+    return Response(serializer.data)
+
 
 
 @api_view(['GET'])
@@ -132,12 +143,16 @@ def get_wishlist(request):
 
     try:
         user = User.objects.get(email=email)
+        # Get wishlist items for registered user
         items = WishlistItem.objects.filter(user=user).select_related('product')
-        products = [w.product for w in items]
-        serializer = ProductSerializer(products, many=True)
-        return Response(serializer.data)
     except User.DoesNotExist:
-        return Response([])
+        # Get wishlist items for guest user
+        items = WishlistItem.objects.filter(email=email, user=None).select_related('product')
+    
+    products = [w.product for w in items]
+    serializer = ProductSerializer(products, many=True)
+    return Response(serializer.data)
+
 
 
 @api_view(['POST'])
@@ -148,13 +163,24 @@ def toggle_wishlist(request):
     if not email or not product_id:
         return Response({'error': 'email and product_id required'}, status=400)
 
-    user, _ = User.objects.get_or_create(username=email, defaults={'email': email})
+    # Check if user is authenticated
+    user = None
+    if request.user.is_authenticated:
+        user = request.user
+        email = request.user.email
+    
     try:
         product = Product.objects.get(id=product_id)
     except Product.DoesNotExist:
         return Response({'error': 'Product not found'}, status=404)
 
-    obj, created = WishlistItem.objects.get_or_create(user=user, product=product)
+    if user:
+        # For authenticated users
+        obj, created = WishlistItem.objects.get_or_create(user=user, product=product, email='')
+    else:
+        # For guest users
+        obj, created = WishlistItem.objects.get_or_create(user=None, product=product, email=email)
+    
     if not created:
         obj.delete()
         return Response({'message': 'removed'})
@@ -173,19 +199,19 @@ def create_order(request):
         total_price = request.data.get('total_price')
         items = request.data.get('items', [])
 
-        # Get or create user
-        user, created = User.objects.get_or_create(
-            username=email,
-            defaults={
-                'email': email,
-                'first_name': first_name,
-                'last_name': last_name,
-            }
-        )
+        # For guest checkout, don't create a user account
+        # Only create an order with email stored in the email field
+        user = None
 
+        # If user is authenticated, link order to authenticated user
+        if request.user.is_authenticated:
+            user = request.user
+            email = request.user.email
+        
         # Create order
         order = Order.objects.create(
             user=user,
+            email=email,
             total_price=total_price,
             address=address,
             city=city,
@@ -207,6 +233,7 @@ def create_order(request):
         }, status=201)
     except Exception as e:
         return Response({'error': str(e)}, status=400)
+
 
 
 @api_view(['POST'])

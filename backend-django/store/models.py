@@ -21,7 +21,8 @@ class Product(models.Model):
 
 
 class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    email = models.EmailField(default='')
     total_price = models.FloatField()
     address = models.CharField(max_length=500, default='')
     city = models.CharField(max_length=100, default='')
