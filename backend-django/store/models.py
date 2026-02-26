@@ -23,6 +23,8 @@ class Product(models.Model):
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     email = models.EmailField(default='')
+    first_name = models.CharField(max_length=100, default='')
+    last_name = models.CharField(max_length=100, default='')
     total_price = models.FloatField()
     address = models.CharField(max_length=500, default='')
     city = models.CharField(max_length=100, default='')
@@ -30,7 +32,10 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Order #{self.id} - {self.user.email} - Rs.{self.total_price}"
+        # handle guest orders where user may be None
+        if self.user:
+            return f"Order #{self.id} - {self.user.email} - Rs.{self.total_price}"
+        return f"Order #{self.id} - {self.email} - Rs.{self.total_price}"
 
 
 
@@ -45,15 +50,17 @@ class OrderItem(models.Model):
 
 
 class WishlistItem(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    email = models.EmailField(default='')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     added_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('user', 'product')
+        unique_together = ('user', 'product', 'email')
 
     def __str__(self):
-        return f"WishlistItem: {self.user.email} - {self.product.name}"
+        user_email = self.user.email if self.user else self.email
+        return f"WishlistItem: {user_email} - {self.product.name}"
 
 from django.db import models
 

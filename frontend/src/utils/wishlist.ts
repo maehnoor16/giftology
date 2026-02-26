@@ -19,12 +19,19 @@ export const toggleWishlist = (product: any) => {
   }
 
   saveWishlist(newList);
-  // If user logged in, sync with backend (fire-and-forget)
+  // attempt to sync with backend if we have an email (user or guest)
   try {
+    let email: string | null = null;
     const raw = localStorage.getItem('user');
     if (raw) {
       const user = JSON.parse(raw);
-      api.post('wishlist/toggle/', { email: user.email, product_id: product.id }).catch(() => {});
+      email = user.email;
+    }
+    if (!email) {
+      email = localStorage.getItem('guestEmail');
+    }
+    if (email) {
+      api.post('wishlist/toggle/', { email, product_id: product.id }).catch(() => {});
     }
   } catch {}
 

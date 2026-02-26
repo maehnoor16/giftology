@@ -38,6 +38,9 @@ const submit = async () => {
   setDialogType("success");
   setDialogOpen(true);
 
+  // clear guest email since user is now authenticated
+  localStorage.removeItem('guestEmail');
+
   setTimeout(() => navigate("/"), 1500);
 };
 

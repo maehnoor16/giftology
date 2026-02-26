@@ -16,6 +16,12 @@ const Wishlist = () => {
           setItems(resp.data || []);
           return;
         }
+        const guestEmail = localStorage.getItem('guestEmail');
+        if (guestEmail) {
+          const resp = await api.get('wishlist/', { params: { email: guestEmail } });
+          setItems(resp.data || []);
+          return;
+        }
       } catch (e) {}
 
       setItems(getWishlist());

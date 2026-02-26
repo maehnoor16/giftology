@@ -27,11 +27,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Email already registered.")
         return value
 
-    def validate_password(self, value):
-        if User.objects.filter(password=value).exists():
-            raise serializers.ValidationError("Password must be unique.")
-        return value
-
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
@@ -61,10 +56,12 @@ class OrderItemSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True)
 
+    # include email for guest orders
+    email = serializers.EmailField()
 
     class Meta:
         model = Order
-        fields = ['id', 'user', 'total_price', 'address', 'city', 'phone', 'created_at', 'items']
+        fields = ['id', 'user', 'email', 'total_price', 'address', 'city', 'phone', 'created_at', 'items']
 
 
     def create(self, validated_data):

@@ -18,16 +18,21 @@ class OrderItemInline(admin.TabularInline):
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('id', 'user_email', 'get_user_name', 'total_price', 'item_count', 'created_at')
     list_filter = ('created_at', 'user')
-    search_fields = ('user__email', 'user__first_name', 'user__last_name')
+    search_fields = ('user__email', 'user__first_name', 'user__last_name', 'email')
     readonly_fields = ('created_at', 'total_price', 'item_count', 'user_details')
     inlines = [OrderItemInline]
     
     def user_email(self, obj):
-        return obj.user.email
+        # show email from user if exists, else guest email field
+        if obj.user:
+            return obj.user.email
+        return obj.email
     user_email.short_description = 'Email'
     
     def get_user_name(self, obj):
-        return f"{obj.user.first_name} {obj.user.last_name}"
+        if obj.user:
+            return f"{obj.user.first_name} {obj.user.last_name}"
+        return f"{obj.first_name} {obj.last_name}" if obj.first_name or obj.last_name else "(guest)"
     get_user_name.short_description = 'Customer Name'
     
     def item_count(self, obj):
@@ -35,7 +40,9 @@ class OrderAdmin(admin.ModelAdmin):
     item_count.short_description = 'No. of Items'
     
     def user_details(self, obj):
-        return f"Name: {obj.user.first_name} {obj.user.last_name}\nEmail: {obj.user.email}\nPhone: {obj.phone}\nAddress: {obj.address}\nCity: {obj.city}"
+        if obj.user:
+            return f"Name: {obj.user.first_name} {obj.user.last_name}\nEmail: {obj.user.email}\nPhone: {obj.phone}\nAddress: {obj.address}\nCity: {obj.city}"
+        return f"Name: {obj.first_name} {obj.last_name}\nEmail: {obj.email}\nPhone: {obj.phone}\nAddress: {obj.address}\nCity: {obj.city}"
     user_details.short_description = 'Customer Details'
     
     fieldsets = (

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Dialog from "../components/Dialog";
 
+// const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -83,6 +84,9 @@ const Register = () => {
     setDialogMessage("Account created successfully!");
     setDialogType("success");
     setDialogOpen(true);
+
+    // clear guest email as orders/wishlist are now linked
+    localStorage.removeItem('guestEmail');
 
     setTimeout(() => navigate("/"), 1500);
 

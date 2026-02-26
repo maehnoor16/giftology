@@ -6,6 +6,8 @@ interface AuthContextType {
   logout: () => void;
 }
 
+// const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/';
+
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

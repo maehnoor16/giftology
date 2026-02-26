@@ -157,6 +157,11 @@ const Checkout = () => {
       setDialogMessage('🎉 Order placed successfully! Your order will be delivered in 2-4 working days.');
       setDialogOpen(true);
 
+      // remember guest email so they can view orders/wishlist
+      if (!user) {
+        localStorage.setItem('guestEmail', formData.email);
+      }
+
       clearCart();
 
       setTimeout(() => navigate('/'), 2000);

@@ -8,14 +8,18 @@ const Orders = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    if (!user) {
+    const guestEmail = localStorage.getItem('guestEmail');
+
+    // if neither logged-in nor guest email available, nothing to load
+    if (!user && !guestEmail) {
       setLoading(false);
       return;
     }
 
     const fetchOrders = async () => {
       try {
-        const response = await api.get(`orders/?email=${user.email}`);
+        const emailToUse = user ? user.email : guestEmail;
+        const response = await api.get(`orders/?email=${emailToUse}`);
         setOrders(response.data);
       } catch (error) {
         console.error('Error fetching orders:', error);
@@ -27,11 +31,11 @@ const Orders = () => {
     fetchOrders();
   }, [user]);
 
-  if (!user) {
+  if (!user && !localStorage.getItem('guestEmail')) {
     return (
       <div className="container">
         <h2 className="section-title">📦 My Orders</h2>
-        <p>Please log in to view your orders.</p>
+        <p>Please log in or place an order to view orders.</p>
       </div>
     );
   }

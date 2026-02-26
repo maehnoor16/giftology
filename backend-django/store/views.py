@@ -55,10 +55,6 @@ def register(request):
     return Response(serializer.errors, status=400)
 
 
-def create(self, validated_data):
-    validated_data['username'] = validated_data['email']
-    return User.objects.create_user(**validated_data)
-
 @api_view(['POST'])
 def login(request):
     email = request.data.get('email')
@@ -212,6 +208,8 @@ def create_order(request):
         order = Order.objects.create(
             user=user,
             email=email,
+            first_name=first_name,
+            last_name=last_name,
             total_price=total_price,
             address=address,
             city=city,
