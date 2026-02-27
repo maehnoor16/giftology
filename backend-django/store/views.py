@@ -22,7 +22,7 @@ def products(request):
         products = Product.objects.all()
         logger.info(f"Fetched {products.count()} products")
         serializer = ProductSerializer(products, many=True)
-        logger.info(f"Serialized data: {serializer.data}")
+
         return Response(serializer.data)
     except Exception as e:
         logger.error(f"Error fetching products: {str(e)}")
