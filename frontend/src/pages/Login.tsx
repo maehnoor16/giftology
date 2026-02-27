@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { validateEmail } from '../utils/validation';
 import Dialog from "../components/Dialog";
-
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -14,35 +14,43 @@ const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-const submit = async () => {
-  if (!email || !password) {
-    setDialogTitle("Missing Fields");
-    setDialogMessage("Please enter both email and password.");
-    setDialogType("error");
+  const submit = async () => {
+    if (!email || !password) {
+      setDialogTitle("Missing Fields");
+      setDialogMessage("Please enter both email and password.");
+      setDialogType("error");
+      setDialogOpen(true);
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setDialogTitle("Invalid Email");
+      setDialogMessage("Please enter a valid email address.");
+      setDialogType("error");
+      setDialogOpen(true);
+      return;
+    }
+
+    const success = await login(email, password);
+
+    if (!success) {
+      setDialogTitle("Login Failed");
+      setDialogMessage("Invalid email or password.");
+      setDialogType("error");
+      setDialogOpen(true);
+      return;
+    }
+
+    setDialogTitle("Success 🎉");
+    setDialogMessage("Logged in successfully!");
+    setDialogType("success");
     setDialogOpen(true);
-    return;
-  }
 
-  const success = await login(email, password);
+    // clear guest email since user is now authenticated
+    localStorage.removeItem('guestEmail');
 
-  if (!success) {
-    setDialogTitle("Login Failed");
-    setDialogMessage("Invalid email or password.");
-    setDialogType("error");
-    setDialogOpen(true);
-    return;
-  }
-
-  setDialogTitle("Success 🎉");
-  setDialogMessage("Logged in successfully!");
-  setDialogType("success");
-  setDialogOpen(true);
-
-  // clear guest email since user is now authenticated
-  localStorage.removeItem('guestEmail');
-
-  setTimeout(() => navigate("/"), 1500);
-};
+    setTimeout(() => navigate("/"), 1500);
+  };
 
 
   return (
@@ -67,29 +75,29 @@ const submit = async () => {
         </button>
 
         {/* Signup text */}
-      <p className="signup-text">
-        Don’t have an account?{" "}
-        <span
-          className="signup-link"
-          onClick={() => navigate("/register")}
-        >
-          Sign up
-        </span>
-      </p>
+        <p className="signup-text">
+          Don’t have an account?{" "}
+          <span
+            className="signup-link"
+            onClick={() => navigate("/register")}
+          >
+            Sign up
+          </span>
+        </p>
 
-      {/* Terms */}
-      <p className="terms-text">
-        By continuing, you agree to our{" "}
-        <span className="terms-link">Terms & Conditions</span>
-      </p>
+        {/* Terms */}
+        <p className="terms-text">
+          By continuing, you agree to our{" "}
+          <span className="terms-link">Terms & Conditions</span>
+        </p>
 
-      <Dialog
-        open={dialogOpen}
-        title={dialogTitle}
-        message={dialogMessage}
-        onClose={() => setDialogOpen(false)}
-        type={dialogType}
-      />
+        <Dialog
+          open={dialogOpen}
+          title={dialogTitle}
+          message={dialogMessage}
+          onClose={() => setDialogOpen(false)}
+          type={dialogType}
+        />
 
       </div>
     </div>

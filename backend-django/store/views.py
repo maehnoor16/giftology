@@ -67,7 +67,7 @@ def login(request):
         )
 
     try:
-        user_obj = User.objects.get(email=email)
+        user_obj = User.objects.get(email__iexact=email)
     except User.DoesNotExist:
         return Response(
             {"error": "Invalid credentials"},

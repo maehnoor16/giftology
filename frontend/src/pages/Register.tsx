@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { api } from "../api";
 import Dialog from "../components/Dialog";
+import { validateEmail, validatePhone } from '../utils/validation';
 
 // const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/';
 
@@ -24,79 +26,73 @@ const Register = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const validateEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const validatePhone = (phone: string) =>
-    /^\+\d{1,3}\d{7,14}$/.test(phone); 
-    // requires country code like +92XXXXXXXXXX
 
   const submit = async () => {
-  const { first_name, last_name, email, password, phone } = form;
+    const { first_name, last_name, email, password, phone } = form;
 
-  if (!first_name || !last_name || !email || !password || !phone) {
-    setDialogTitle("Missing Fields");
-    setDialogMessage("All fields are required.");
-    setDialogType("error");
-    setDialogOpen(true);
-    return;
-  }
-
-  if (!validateEmail(email)) {
-    setDialogTitle("Invalid Email");
-    setDialogMessage("Please enter a valid email address.");
-    setDialogType("error");
-    setDialogOpen(true);
-    return;
-  }
-
-  if (!validatePhone(phone)) {
-    setDialogTitle("Invalid Phone");
-    setDialogMessage("Phone must include country code. Example: +923001234567");
-    setDialogType("error");
-    setDialogOpen(true);
-    return;
-  }
-
-  try {
-    const res = await fetch("https://giftology-backend.onrender.com/api/register/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        username: email,
-        first_name,
-        last_name,
-        email,
-        password,
-      }),
-    });
-
-    if (!res.ok) {
-      const error = await res.json();
-      setDialogTitle("Registration Failed");
-      setDialogMessage(error.email?.[0] || "Email already exists.");
+    if (!first_name || !last_name || !email || !password || !phone) {
+      setDialogTitle("Missing Fields");
+      setDialogMessage("All fields are required.");
       setDialogType("error");
       setDialogOpen(true);
       return;
     }
 
-    setDialogTitle("Success 🎉");
-    setDialogMessage("Account created successfully!");
-    setDialogType("success");
-    setDialogOpen(true);
+    if (!validateEmail(email)) {
+      setDialogTitle("Invalid Email");
+      setDialogMessage("Please enter a valid email address.");
+      setDialogType("error");
+      setDialogOpen(true);
+      return;
+    }
 
-    // clear guest email as orders/wishlist are now linked
-    localStorage.removeItem('guestEmail');
+    if (!validatePhone(phone)) {
+      setDialogTitle("Invalid Phone");
+      setDialogMessage("Phone must include country code. Example: +923001234567");
+      setDialogType("error");
+      setDialogOpen(true);
+      return;
+    }
 
-    setTimeout(() => navigate("/"), 1500);
+    try {
+      const res = await api.post("register/", {
+        username: email,
+        first_name,
+        last_name,
+        email,
+        password,
+      });
 
-  } catch {
-    setDialogTitle("Server Error");
-    setDialogMessage("Something went wrong. Please try again.");
-    setDialogType("error");
-    setDialogOpen(true);
-  }
-};
+      setDialogTitle("Success 🎉");
+      setDialogMessage("Account created successfully!");
+      setDialogType("success");
+      setDialogOpen(true);
+
+      // clear guest email as orders/wishlist are now linked
+      localStorage.removeItem('guestEmail');
+
+      setTimeout(() => navigate("/"), 1500);
+
+    } catch (err: any) {
+      console.error('Registration error:', err);
+
+      setDialogTitle("Registration Failed");
+      setDialogType("error");
+
+      if (err.response && err.response.data) {
+        // Extract specifically the error message for email or general errors
+        const data = err.response.data;
+        const firstError = Object.values(data)[0];
+        const message = Array.isArray(firstError) ? firstError[0] : "Invalid registration data.";
+        setDialogMessage(message);
+      } else {
+        setDialogMessage("Something went wrong. Please check your connection or try again later.");
+      }
+
+      setDialogOpen(true);
+    }
+  };
 
 
   return (
@@ -140,23 +136,23 @@ const Register = () => {
           Create Account
         </button>
 
-         <p className="signup-text">
-        Already have an account?{" "}
-        <span
-          className="signup-link"
-          onClick={() => navigate("/login")}
-        >
-          Login
-        </span>
-      </p>
+        <p className="signup-text">
+          Already have an account?{" "}
+          <span
+            className="signup-link"
+            onClick={() => navigate("/login")}
+          >
+            Login
+          </span>
+        </p>
 
-      <Dialog
-        open={dialogOpen}
-        title={dialogTitle}
-        message={dialogMessage}
-        onClose={() => setDialogOpen(false)}
-        type={dialogType}
-      />
+        <Dialog
+          open={dialogOpen}
+          title={dialogTitle}
+          message={dialogMessage}
+          onClose={() => setDialogOpen(false)}
+          type={dialogType}
+        />
 
 
       </div>

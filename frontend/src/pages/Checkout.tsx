@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api';
 import Dialog from '../components/Dialog';
+import { validateEmail, validatePhone } from '../utils/validation';
 import '../styles/checkout.css';
 
 const Checkout = () => {
@@ -124,6 +125,20 @@ const Checkout = () => {
       return;
     }
 
+    if (!validateEmail(formData.email)) {
+      setDialogType('error');
+      setDialogMessage('Please enter a valid email address');
+      setDialogOpen(true);
+      return;
+    }
+
+    if (!validatePhone(formData.phone)) {
+      setDialogType('error');
+      setDialogMessage('Phone must include country code. Example: +923001234567');
+      setDialogOpen(true);
+      return;
+    }
+
     if (cart.length === 0) {
       setDialogType('error');
       setDialogMessage('Your cart is empty');
@@ -222,7 +237,7 @@ const Checkout = () => {
             value={formData.couponCode}
             onChange={handleChange}
           />
-         <button
+          <button
             type="button"
             className="button coupon-btn"
             onClick={handleApplyCoupon}
